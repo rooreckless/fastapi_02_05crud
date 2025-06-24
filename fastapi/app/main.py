@@ -46,6 +46,7 @@ async def read_books():
 #----書籍のGET用(IDを指定)ルート--------------------------
 @app.get("/books/{book_id}", response_model=BookResponseSchema)
 async def read_book(book_id: int):
+    # パスパラメータのみで書籍を取得する
     for book in books:
         if book.id == book_id:
             return book
@@ -66,5 +67,20 @@ async def update_book(book_id: int,book: BookSchema):
             books[index] = updated_book
             # 更新した本を返す(BookResponseSchema型だから、idがある状態で帰っている)
             return updated_book
+    # なかった場合は例外を返す
+    raise HTTPException(status_code=404, detail="Book not found")
+
+
+#----書籍のDLETE用(IDを指定して削除)ルート--------------------------
+# 削除した本の情報をBookResponseSchemaの形式で解す
+@app.delete("/books/{book_id}", response_model=BookResponseSchema)
+def delete_book(book_id:int):
+    #パスパラメータのみで削除を実行する = 以下のforとifはgetの時にかなり近い
+    for index, book in enumerate(books):
+        if book.id == book_id:
+            #ダミーデータのリストから、要素を除去 = pop
+            books.pop(index)
+            # 削除した本の情報を返す(違和感あるけど)
+            return book
     # なかった場合は例外を返す
     raise HTTPException(status_code=404, detail="Book not found")
