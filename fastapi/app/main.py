@@ -33,3 +33,9 @@ async def create_book(book: BookSchema):                #<- 引数bookはpostリ
     books.append(new_book)
     # 登録書籍データを返す
     return new_book
+
+#----書籍のGET用(一覧を返す)ルート--------------------------
+@app.get("/books/", response_model=list[BookResponseSchema])
+async def read_books():
+    # 登録されている全書籍を返す
+    return books
