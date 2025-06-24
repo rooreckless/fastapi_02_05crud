@@ -28,8 +28,11 @@ async def create_book(book: BookSchema):                #<- 引数bookはpostリ
     # 新しい書籍IDを作成
     new_book_id = max([book.id for book in books],default=0)+1
     # 新しい書籍を作成
+    # **book.model_dump()はPydanticモデルのインスタンスからのメソッド(bookはBookSchema型 =pydantic.BaseModelを継承したクラスのもの)である。
+    # そのインスタンスから辞書形式のデータにアンパック({title=値,category=値}という属性と値でキーバリューの辞書)にしたうえで、
+    # さらに新しいidを発行してキーバリューを増やした上で、BookResponseSchemaに入れ直している。
     new_book =BookResponseSchema(id=new_book_id, **book.model_dump())
-    # ダミーデータに追加
+    # ダミーデータに追加 = さっきのnew_bookをリストに追加する
     books.append(new_book)
     # 登録書籍データを返す
     return new_book
@@ -46,5 +49,22 @@ async def read_book(book_id: int):
     for book in books:
         if book.id == book_id:
             return book
-    # 登録されている全書籍を返す
+    # なかった場合は例外を返す
+    raise HTTPException(status_code=404, detail="Book not found")
+
+#----書籍のPUT用(IDを指定して更新)ルート--------------------------
+@app.put("/books/{book_id}", response_model=BookResponseSchema)
+async def update_book(book_id: int,book: BookSchema):
+    # パスパラメータ{book_id}とリクエストボディBookSchemaの両方を使っている
+    for index, existing_book in enumerate(books):
+        if existing_book.id == book_id:
+            # パスパラメータのidと一致するダミーデータがあった場合
+            # postの時と同じように、リクエストボディのbookを{title=値,category=値}という辞書にアンパックし、(book.model_dump()で)
+            # さらにid=book_idのキーバリューも追加してBookResponseSchemaに入れ直す = 「既存の本を更新」ということ。
+            updated_book = BookResponseSchema(id=book_id, **book.model_dump())
+            #更新した本をダミーデータのリストに詰め直す
+            books[index] = updated_book
+            # 更新した本を返す(BookResponseSchema型だから、idがある状態で帰っている)
+            return updated_book
+    # なかった場合は例外を返す
     raise HTTPException(status_code=404, detail="Book not found")
