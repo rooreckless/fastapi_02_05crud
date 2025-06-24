@@ -13,12 +13,12 @@ async def root():
 from .schemas.book_schemas import BookSchema, BookResponseSchema
 # ダミーの書籍リスト
 books: list[BookResponseSchema]=[
-    BookResponseSchema(id=1, title="Python入門", category="technical"),
-    BookResponseSchema(id=2, title="初めてのプログラミング", category="technical"),
-    BookResponseSchema(id=3, title="進む巨人", category="comics"),
-    BookResponseSchema(id=4, title="DBおやじ", category="comics"),
-    BookResponseSchema(id=5, title="週間ダイヤモンド", category="magazine"),
-    BookResponseSchema(id=6, title="ザ・社長", category="magazine"),
+    BookResponseSchema(id=1, title="Python入門", category="technical",price=100),
+    BookResponseSchema(id=2, title="初めてのプログラミング", category="technical",price=200),
+    BookResponseSchema(id=3, title="進む巨人", category="comics",price=300),
+    BookResponseSchema(id=4, title="DBおやじ", category="comics",price=400),
+    BookResponseSchema(id=5, title="週間ダイヤモンド", category="magazine",price=500),
+    BookResponseSchema(id=6, title="ザ・社長", category="magazine",price=600),
 ]
 
 
