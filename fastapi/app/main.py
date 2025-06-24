@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException
 
 app = FastAPI()
 
@@ -39,3 +39,12 @@ async def create_book(book: BookSchema):                #<- 引数bookはpostリ
 async def read_books():
     # 登録されている全書籍を返す
     return books
+
+#----書籍のGET用(IDを指定)ルート--------------------------
+@app.get("/books/{book_id}", response_model=BookResponseSchema)
+async def read_book(book_id: int):
+    for book in books:
+        if book.id == book_id:
+            return book
+    # 登録されている全書籍を返す
+    raise HTTPException(status_code=404, detail="Book not found")
